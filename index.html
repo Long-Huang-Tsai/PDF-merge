@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -17,9 +18,10 @@
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
+
 <body>
     <div class="glass-bg"></div>
-    
+
     <div class="container">
         <header>
             <div class="logo">
@@ -42,8 +44,13 @@
 
             <section id="editor-section" class="editor-section hidden">
                 <div class="section-header">
-                    <h2>頁面編輯區</h2>
-                    <p>拖拽卡片調整順序，點擊按鈕旋轉頁面</p>
+                    <div class="section-header-content">
+                        <h2>頁面編輯區</h2>
+                        <p>拖拽卡片調整順序，點擊按鈕旋轉頁面</p>
+                    </div>
+                    <button id="toggle-all-btn" class="btn btn-sm btn-outline">
+                        <i data-lucide="minus-circle"></i> 全部不選取
+                    </button>
                 </div>
                 <div id="pages-grid" class="pages-grid">
                     <!-- 預覽縮圖將動態插入在此 -->
@@ -66,4 +73,5 @@
 
     <script src="app.js"></script>
 </body>
+
 </html>
