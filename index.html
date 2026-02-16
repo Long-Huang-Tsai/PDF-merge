@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Mergery - 現代化 PDF 合併工具</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <!-- PDF.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <!-- pdf-lib -->
+    <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
+    <!-- SortableJS -->
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+    <div class="glass-bg"></div>
+    
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i data-lucide="file-stack"></i>
+                <h1>PDF Mergery</h1>
+            </div>
+            <button class="btn btn-primary btn-merge-top" disabled>
+                <i data-lucide="combine"></i> 合併並下載
+            </button>
+        </header>
+
+        <main>
+            <section id="drop-zone" class="drop-zone">
+                <div class="drop-zone-content">
+                    <i data-lucide="upload-cloud" class="upload-icon"></i>
+                    <p>拖拽 PDF 檔案至此，或 <span>點擊上傳</span></p>
+                    <input type="file" id="file-input" multiple accept="application/pdf" hidden>
+                </div>
+            </section>
+
+            <section id="editor-section" class="editor-section hidden">
+                <div class="section-header">
+                    <h2>頁面編輯區</h2>
+                    <p>拖拽卡片調整順序，點擊按鈕旋轉頁面</p>
+                </div>
+                <div id="pages-grid" class="pages-grid">
+                    <!-- 預覽縮圖將動態插入在此 -->
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <button class="btn btn-primary btn-merge-bottom" disabled>
+                <i data-lucide="combine"></i> 合併並下載
+            </button>
+        </footer>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loading" class="overlay hidden">
+        <div class="loader"></div>
+        <p>正在處理 PDF 頁面...</p>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
