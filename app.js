@@ -2,7 +2,8 @@ const { PDFDocument, degrees } = PDFLib;
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
 // 狀態管理
-let pages = []; // { id, data, pageNum, rotation, originalPdfIndex }
+let pages = []; // { id, data, pageNum, rotation, originalPdfIndex, excluded }
+let isAllExcluded = false; // 追蹤全選/全不選狀態
 let originalPdfs = []; // 存儲原始 PDF 的 ArrayBuffer
 
 // DOM 元素
@@ -11,6 +12,7 @@ const fileInput = document.getElementById('file-input');
 const pagesGrid = document.getElementById('pages-grid');
 const editorSection = document.getElementById('editor-section');
 const mergeBtns = document.querySelectorAll('.btn-merge-top, .btn-merge-bottom');
+const toggleAllBtn = document.getElementById('toggle-all-btn');
 const loadingOverlay = document.getElementById('loading');
 
 // 初始化 Lucide 圖標
@@ -47,6 +49,7 @@ dropZone.addEventListener('drop', (e) => {
 });
 
 mergeBtns.forEach(btn => btn.addEventListener('click', mergePDFs));
+toggleAllBtn.addEventListener('click', toggleAllPages);
 
 async function handleFileSelect(e) {
     const files = Array.from(e.target.files);
@@ -85,7 +88,10 @@ async function processFiles(files) {
                     preview: canvas.toDataURL('image/jpeg', 0.8), // 使用 JPEG 減少記憶體佔用
                     pageNum: i,
                     rotation: 0,
-                    originalPdfIndex: pdfIndex
+                    pageNum: i,
+                    rotation: 0,
+                    originalPdfIndex: pdfIndex,
+                    excluded: false
                 };
 
                 pages.push(pageData);
@@ -114,6 +120,9 @@ function renderPageCard(pageData) {
             <img src="${pageData.preview}" class="preview-img" style="transform: rotate(0deg)">
         </div>
         <div class="page-info">
+            <button class="toggle-btn" title="包含/排除此頁面">
+                <i data-lucide="minus"></i>
+            </button>
             <span class="page-number">頁面</span>
             <button class="rotate-btn" title="順時針旋轉 90 度">
                 <i data-lucide="rotate-cw"></i>
@@ -127,6 +136,12 @@ function renderPageCard(pageData) {
         rotatePage(pageData.id, card);
     });
 
+    const toggleBtn = card.querySelector('.toggle-btn');
+    toggleBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        togglePageExclusion(pageData.id, card);
+    });
+
     pagesGrid.appendChild(card);
     lucide.createIcons();
     updatePageNumbers();
@@ -136,8 +151,66 @@ function rotatePage(id, card) {
     const page = pages.find(p => p.id === id);
     page.rotation = (page.rotation + 90) % 360;
 
-    const img = card.querySelector('.preview-img');
     img.style.transform = `rotate(${page.rotation}deg)`;
+}
+
+function togglePageExclusion(id, card) {
+    const page = pages.find(p => p.id === id);
+    page.excluded = !page.excluded;
+
+    updatePageCardVisuals(card, page.excluded);
+    updateMergeButtonsState();
+}
+
+function updatePageCardVisuals(card, isExcluded) {
+    const toggleBtn = card.querySelector('.toggle-btn');
+
+    if (isExcluded) {
+        card.classList.add('excluded');
+        toggleBtn.innerHTML = '<i data-lucide="plus"></i>';
+    } else {
+        card.classList.remove('excluded');
+        toggleBtn.innerHTML = '<i data-lucide="minus"></i>';
+    }
+    lucide.createIcons({ attrs: { class: "lucide" }, nameAttr: 'data-lucide' });
+}
+
+function toggleAllPages() {
+    isAllExcluded = !isAllExcluded;
+
+    // 更新所有頁面狀態
+    pages.forEach(page => {
+        page.excluded = isAllExcluded;
+        const card = document.querySelector(`.page-card[data-id="${page.id}"]`);
+        if (card) {
+            // Manually update to avoid calling createIcons N times
+            const toggleBtn = card.querySelector('.toggle-btn');
+            if (isAllExcluded) {
+                card.classList.add('excluded');
+                toggleBtn.innerHTML = '<i data-lucide="plus"></i>';
+            } else {
+                card.classList.remove('excluded');
+                toggleBtn.innerHTML = '<i data-lucide="minus"></i>';
+            }
+        }
+    });
+
+    // 更新按鈕文字與圖標
+    if (isAllExcluded) {
+        toggleAllBtn.innerHTML = '<i data-lucide="plus-circle"></i> 全部選取';
+    } else {
+        toggleAllBtn.innerHTML = '<i data-lucide="minus-circle"></i> 全部不選取';
+    }
+
+    // Update all icons at once
+    lucide.createIcons();
+    updateMergeButtonsState();
+}
+
+function updateMergeButtonsState() {
+    // 只有當至少有一頁未被排除時才允許合併
+    const hasIncludedPages = pages.some(p => !p.excluded);
+    updateMergeButtons(hasIncludedPages);
 }
 
 function updatePageNumbers() {
@@ -156,16 +229,20 @@ function showLoading(show) {
 }
 
 async function mergePDFs() {
-    if (pages.length === 0) return;
+    const activePages = pages.filter(p => !p.excluded);
+    if (activePages.length === 0) {
+        alert('請至少選擇一個頁面進行合併');
+        return;
+    }
 
     showLoading(true);
-    console.log('開始合併 PDF，當前頁面數:', pages.length);
+    console.log('開始合併 PDF，當前頁面數:', activePages.length);
 
     try {
         const mergedPdf = await PDFDocument.create();
         const pdfDocCache = new Map(); // 緩存已加載的 PDFDocument 物件
 
-        for (const item of pages) {
+        for (const item of activePages) {
             let originalPdfDoc = pdfDocCache.get(item.originalPdfIndex);
 
             if (!originalPdfDoc) {

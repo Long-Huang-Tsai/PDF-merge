@@ -30,7 +30,7 @@ body {
     width: 100%;
     height: 100%;
     background: radial-gradient(circle at 20% 30%, #1e1b4b 0%, transparent 50%),
-                radial-gradient(circle at 80% 70%, #312e81 0%, transparent 50%);
+        radial-gradient(circle at 80% 70%, #312e81 0%, transparent 50%);
     z-index: -1;
 }
 
@@ -43,7 +43,8 @@ body {
     min-height: 100vh;
 }
 
-header, footer {
+header,
+footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -67,6 +68,7 @@ footer {
     letter-spacing: -0.025em;
     background: linear-gradient(to right, #818cf8, #c084fc);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
@@ -240,6 +242,65 @@ footer {
     transform: rotate(90deg);
 }
 
+.toggle-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: var(--text);
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.toggle-btn:hover {
+    background: var(--accent);
+    color: white;
+}
+
+.page-card.excluded {
+    filter: grayscale(1);
+    opacity: 0.5;
+}
+
+.page-card.excluded .toggle-btn {
+    background: var(--text-muted);
+}
+
+.page-card.excluded .toggle-btn:hover {
+    background: var(--accent);
+}
+
+.btn-sm {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+}
+
+.btn-outline {
+    background: transparent;
+    border: 1px solid var(--glass-border);
+    color: var(--text);
+}
+
+.btn-outline:hover {
+    background: var(--glass-border);
+    border-color: var(--text-muted);
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 1.5rem;
+}
+
+.section-header-content {
+    flex: 1;
+}
+
 /* Sortable Ghost */
 .sortable-ghost {
     opacity: 0.4;
@@ -276,16 +337,33 @@ footer {
 }
 
 @keyframes spin {
-    to { transform: rotate(360deg); }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 @media (max-width: 640px) {
-    .container { padding: 1rem; }
-    .pages-grid { grid-template-columns: repeat(2, 1fr); }
-    .btn-merge-top { display: none; }
+    .container {
+        padding: 1rem;
+    }
+
+    .pages-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .btn-merge-top {
+        display: none;
+    }
 }
