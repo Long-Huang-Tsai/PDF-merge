@@ -13,6 +13,7 @@ const pagesGrid = document.getElementById('pages-grid');
 const editorSection = document.getElementById('editor-section');
 const mergeBtns = document.querySelectorAll('.btn-merge-top, .btn-merge-bottom');
 const toggleAllBtn = document.getElementById('toggle-all-btn');
+const clearAllBtn = document.getElementById('clear-all-btn');
 const loadingOverlay = document.getElementById('loading');
 
 // 初始化 Lucide 圖標
@@ -50,6 +51,7 @@ dropZone.addEventListener('drop', (e) => {
 
 mergeBtns.forEach(btn => btn.addEventListener('click', mergePDFs));
 toggleAllBtn.addEventListener('click', toggleAllPages);
+clearAllBtn.addEventListener('click', clearAllPages);
 
 async function handleFileSelect(e) {
     const files = Array.from(e.target.files);
@@ -205,6 +207,23 @@ function toggleAllPages() {
     // Update all icons at once
     lucide.createIcons();
     updateMergeButtonsState();
+}
+
+function clearAllPages() {
+    if (pages.length === 0) return;
+    
+    if (confirm('確定要清除所有頁面嗎？')) {
+        pages = [];
+        originalPdfs = [];
+        pagesGrid.innerHTML = '';
+        editorSection.classList.add('hidden');
+        updateMergeButtons(false);
+        isAllExcluded = false;
+        
+        // 重置全選按鈕文字
+        toggleAllBtn.innerHTML = '<i data-lucide="minus-circle"></i> 全部不選取';
+        lucide.createIcons();
+    }
 }
 
 function updateMergeButtonsState() {

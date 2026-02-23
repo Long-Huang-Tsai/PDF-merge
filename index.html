@@ -48,9 +48,14 @@
                         <h2>頁面編輯區</h2>
                         <p>拖拽卡片調整順序，點擊按鈕旋轉頁面</p>
                     </div>
-                    <button id="toggle-all-btn" class="btn btn-sm btn-outline">
-                        <i data-lucide="minus-circle"></i> 全部不選取
-                    </button>
+                    <div class="header-actions">
+                        <button id="toggle-all-btn" class="btn btn-sm btn-outline">
+                            <i data-lucide="minus-circle"></i> 全部不選取
+                        </button>
+                        <button id="clear-all-btn" class="btn btn-sm btn-danger">
+                            <i data-lucide="trash-2"></i> 清除全部頁面
+                        </button>
+                    </div>
                 </div>
                 <div id="pages-grid" class="pages-grid">
                     <!-- 預覽縮圖將動態插入在此 -->
